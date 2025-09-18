@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  availability-tracker:
+    image: "hagert/teamavail:latest"
+    container_name: team-tracker
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./input:/app/input:ro
+      - ./output:/app/output
+    restart: unless-stopped
+    networks:
+      - teamtracker-network
+
+ 
+  redis:
+    image: redis:7-alpine
+    container_name: teamtracker-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - teamtracker-network
+
+volumes:
+  redis_data:
+
+networks:
+  teamtracker-network:
+    driver: bridge
