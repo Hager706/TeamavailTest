@@ -60,8 +60,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh """
-                  export IMAGE_NAME=${IMAGE_NAME}
-                  export TAG=${TAG}
+                  export IMAGE_NAME=${DOCKER_IMAGE}
+                  export TAG=${DOCKER_TAG}
                   docker-compose down || true
                   docker-compose pull
                   docker-compose up -d
