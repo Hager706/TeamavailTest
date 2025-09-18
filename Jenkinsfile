@@ -1,9 +1,11 @@
+@Library('SharedLib') _
 pipeline {
     agent any
 
     environment {
         IMAGE_NAME = "hagert/teamavail"
         TAG = "${BUILD_NUMBER}"
+        DOCKERHUB_CRED_ID = "hagert"
     }
     
 //     tools {
@@ -47,12 +49,9 @@ pipeline {
         stage('Build & Push Docker Image') {
             steps {
                 script {
-                    def image = docker.build("${IMAGE_NAME}:${TAG}")
-                    sh "docker tag ${IMAGE_NAME}:${TAG} ${IMAGE_NAME}:latest"
+                  buildImage("${DOCKER_IMAGE}", "${DOCKER_TAG}")
                     
-                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub-creds') {
-                        image.push("${TAG}")
-                        image.push("latest")
+                   pushImage("${DOCKER_IMAGE}", "${DOCKER_TAG}", "${DOCKERHUB_CRED_ID}")
                     }
                 }
             }
