@@ -6,11 +6,18 @@ pipeline {
         TAG = "${BUILD_NUMBER}"
     }
     
-    tools {
-        nodejs "18"
-    }
+//     tools {
+//         nodejs "18"
+//     }
     
     stages {
+        stage('Run App') {
+            steps {
+                sh 'node -v'
+                sh 'npm install'
+                sh 'npm start &'
+            }
+        }
         stage('Checkout') {
             steps {
                 checkout scm
