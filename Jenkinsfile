@@ -3,8 +3,8 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = "hagert/teamavail"
-        TAG = "${BUILD_NUMBER}"
+        DOCKER_IMAGE = "hagert/teamavail"
+        DOCKER_TAG = "${BUILD_NUMBER}"
         DOCKERHUB_CRED_ID = "hagert"
     }
     
