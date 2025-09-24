@@ -44,18 +44,19 @@ npm start
 
 ```bash
 docker build -t hagert/teamavail:latest .
-
+```
 ![Connect](assets/2.png)
-
+```bash
 docker run -p 3000:3000 hagert/teamavail:latest
-
+```
 ![Connect](assets/3.png)
 
+```bash
 to check >> docker ps 
-
+```
 ![Connect](assets/1.png)
 
-```
+
 **Access**: http://localhost:3000
 
 ![Connect](assets/4.png)
