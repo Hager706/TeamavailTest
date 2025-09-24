@@ -1,14 +1,18 @@
 version: '3.8'
 
 services:
-  availability-tracker:
-    image: "hagert/teamavail:latest"
-    container_name: team-tracker
+  app:
+    build: .
     ports:
       - "3000:3000"
     volumes:
-      - ./input:/app/input:ro
+      - ./input:/app/input
       - ./output:/app/output
+      - ./public:/app/public
+    environment:
+      - NODE_ENV=development
+    depends_on:
+      - redis
     restart: unless-stopped
     networks:
       - teamtracker-network
@@ -16,12 +20,11 @@ services:
  
   redis:
     image: redis:7-alpine
-    container_name: teamtracker-redis
     ports:
       - "6379:6379"
+    restart: unless-stopped
     volumes:
       - redis_data:/data
-    restart: unless-stopped
     networks:
       - teamtracker-network
 
