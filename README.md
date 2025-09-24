@@ -108,7 +108,13 @@ chmod +x ci.sh
 
 1. **Dependency Installation**: Downloads and installs all required packages
 2. **Code Quality Checks**: Runs linting and formatting validation
+
+![Connect](assets/10.png)
+
 3. **Testing**: Executes the test suite to verify application functionality
+
+![Connect](assets/9.png)
+
 4. **Build**: Creates a Docker image of the application
 5. **Deployment**: Starts the application using Docker Compose
 

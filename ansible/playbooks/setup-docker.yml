@@ -1,0 +1,44 @@
+---
+- name: Setup Docker and Prerequisites
+  hosts: all
+  become: yes
+  vars:
+    ecr_repository_uri: "{{ lookup('env', 'ECR_REPOSITORY_URI') }}"
+    aws_region: "{{ lookup('env', 'AWS_DEFAULT_REGION') | default('us-east-1') }}"
+
+  tasks:
+    - name: Update system packages
+      yum:
+        name: "*"
+        state: latest
+
+    - name: Install required packages
+      yum:
+        name:
+          - docker
+          - git
+          - aws-cli
+        state: present
+
+    - name: Start and enable Docker
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add ec2-user to docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
+
+    - name: Install Docker Compose
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-Linux-x86_64"
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+
+    - name: Login to ECR
+      shell: |
+        aws ecr get-login-password --region {{ aws_region }} | docker login --username AWS --password-stdin {{ ecr_repository_uri }}
+      become_user: ec2-user
