@@ -135,12 +135,150 @@ For enterprise environments, Jenkins pipeline support is included:
 ### ESLint (.eslintrc.json)
 **Purpose**: Enforces JavaScript code quality standards and catches common errors.
 
-### Prettier (.prettierrc)
-**Purpose**: Maintains consistent code formatting across the project.
-
 ### Jest (jest.config.js)
 **Purpose**: Configures the testing framework with appropriate settings for Node.js applications.
 
-### Git (.gitignore)
-**Purpose**: Excludes unnecessary files from version control including node_modules, logs, and build artifacts.
+---
+
+# Phase 2: AWS + Jenkins + Terraform + Ansible Complete Guide
+
+## Project Overview
+
+**Goal**: Deploy the availability tracker application to AWS using DevOps tools.
+**Tools**: Jenkins, Terraform, Ansible, AWS (VPC, EC2, ECR, ElastiCache).
+**Flow**: GitHub → Jenkins → Terraform → AWS → Ansible → Deployed App.
+
+---
+
+## Architecture
+
+```
+Developer → GitHub → Jenkins → Terraform → AWS Infrastructure
+                                     ↓
+GitHub Webhook → Jenkins Pipeline → Ansible → Configure EC2 → Deploy App
+```
+
+**AWS Resources Created:**
+
+* VPC with subnets
+* EC2 instance(s) for the app
+* ECR for Docker images
+* ElastiCache (Redis)
+* Security Groups
+* Application Load Balancer (ALB)
+
+---
+
+## Project Structure
+
+```
+TeamavailTest/
+├── terraform/
+│   ├── main.tf
+│   ├── variables.tf
+│   ├── outputs.tf
+│   ├── vpc.tf
+│   ├── ec2.tf
+│   ├── ecr.tf
+│   ├── redis.tf
+│   └── security.tf
+├── ansible/
+│   ├── inventory/
+│   │   └── aws_ec2.yml
+│   ├── playbooks/
+│   │   ├── setup-docker.yml
+│   │   ├── deploy-app.yml
+│   │   └── site.yml
+│   └── ansible.cfg
+├── jenkins/
+│   └── Jenkinsfile
+├── docker-compose.aws.yml
+└── README-Phase2.md
+```
+
+---
+
+## Step-by-Step Implementation
+
+### Step 1: AWS & Local Setup
+
+1. Installed AWS CLI and configured credentials (`aws configure`).
+2. Installed Terraform.
+3. Installed Ansible and AWS Ansible Collection.
+4. Verified configuration by running:
+
+---
+
+### Step 2: Infrastructure with Terraform
+
+1. Created `variables.tf` with project settings like region, environment, and instance type.
+2. Created `main.tf` to define providers and data sources (AMIs, availability zones).
+3. Created `vpc.tf` to define the VPC, subnets, internet gateway, and route tables.
+
+![Connect](assets/12.png)
+
+4. Created `security.tf` to define Security Groups for ALB, EC2, and Redis.
+5. Created `ecr.tf` to provision an ECR repository with lifecycle policy.
+
+![Connect](assets/13.png)
+
+![Connect](assets/16.png)
+
+
+6. Created `redis.tf` to set up ElastiCache Redis cluster and subnet group.
+
+![Connect](assets/14.png)
+
+7. Created `ec2.tf` for EC2 Auto Scaling Group, Launch Template, and ALB with listener.
+8. Added `user_data.sh` to bootstrap EC2 with Docker and AWS CLI.
+
+![Connect](assets/15.png)
+
+9. Added `outputs.tf` to expose useful values like ALB DNS, Redis endpoint, and ECR URL.
+
+![Connect](assets/11.png)
+
+---
+
+### Step 3: Configuration with Ansible
+
+1. Configured `ansible.cfg` to use AWS EC2 dynamic inventory.
+2. Created `inventory/aws_ec2.yml` for inventory based on tags.
+3. Created `setup-docker.yml` playbook to install Docker, Docker Compose, and login to ECR.
+4. Created `deploy-app.yml` playbook to pull the image, create a docker-compose file, and deploy the app.
+5. Created `site.yml` to combine setup and deploy steps.
+6. Created `docker-compose.aws.yml.j2` template with Redis environment variables.
+
+
+---
+
+### Step 4: Jenkins Pipeline
+
+1. Configured Jenkins with GitHub Webhook.
+
+   * Used **ngrok** to expose local Jenkins to GitHub for testing.
+    1-
+   ![Connect](assets/17.png)
+
+   2-
+   ![Connect](assets/19.png)
+
+
+   * Added the webhook in GitHub repo settings.
+
+      ![Connect](assets/18.png)
+
+2. Created `Jenkinsfile` with stages:
+
+   * Checkout code from GitHub.
+   * Build and push Docker image to ECR.
+   * Terraform init, plan, and apply (on main branch).
+   * Deploy with Ansible (site.yml).
+   * Health check to validate the app.
+3. Jenkins pipeline triggered automatically on push via webhook.
+
+
+---
+
+
 

@@ -1,19 +1,33 @@
+# plugin: amazon.aws.aws_ec2
+# regions:
+#   - us-east-1
+# filters:
+#   "tag:Project": "availability-tracker"
+#   instance-state-name: "running"
+
+# keyed_groups:
+#   - key: tags.Environment
+#     prefix: env
+#   - key: instance_type
+#     prefix: type
+
+# hostnames:
+#   - public-dns-name
+#   - private-ip-address
+
+# compose:
+#   ansible_host: public_dns_name
 plugin: amazon.aws.aws_ec2
 regions:
   - us-east-1
 filters:
-  tag:Project: availability-tracker
-  instance-state-name: running
-
-keyed_groups:
-  - key: tags.Environment
-    prefix: env
-  - key: instance_type
-    prefix: type
+  instance-state-name: running   # ✅ شيل tag مؤقتًا عشان نتأكد انه بيجيب أي instance
 
 hostnames:
-  - dns-name
+  - public-dns-name              # يخلي ansible يستعمل ال Public DNS
+  - public-ip-address
   - private-ip-address
 
 compose:
-  ansible_host: public_dns_name
+  ansible_host: public_dns_name 
+  ansible_python_interpreter: /usr/bin/python3
