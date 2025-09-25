@@ -1,6 +1,6 @@
 resource "aws_key_pair" "app" {
   key_name   = var.key_pair_name
-  public_key = file("~/.ssh/id_rsa.pub") 
+  public_key = file("~/.ssh/id_rsa5.pub") 
 
   tags = {
     Name = "${var.project_name}-keypair"
